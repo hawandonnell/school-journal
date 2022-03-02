@@ -3,8 +3,9 @@ import { createSlice } from '@reduxjs/toolkit'
 export const appDataSlice = createSlice({
     name: 'appData',
     initialState: {
-        columns: [],
-        data: [],
+        columns: '',
+        data: '',
+        currentMember: {},
     },
     reducers: {
         loadColumns: (state, action) => {
@@ -13,9 +14,13 @@ export const appDataSlice = createSlice({
         loadData: (state, action) => {
             state.data = action.payload
         },
+        changeCurrentMember: (state, action) => {
+            state.currentMember = action.payload
+        },
     },
 })
 
-export const { loadColumns, loadData } = appDataSlice.actions
+export const { loadColumns, loadData, changeCurrentMember } =
+    appDataSlice.actions
 
 export default appDataSlice.reducer
