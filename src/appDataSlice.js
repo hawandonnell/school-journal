@@ -6,6 +6,7 @@ export const appDataSlice = createSlice({
         columns: '',
         data: '',
         currentMember: {},
+        currentMark: {},
     },
     reducers: {
         loadColumns: (state, action) => {
@@ -14,13 +15,24 @@ export const appDataSlice = createSlice({
         loadData: (state, action) => {
             state.data = action.payload
         },
+        changeData: (state, action) => {
+            state.data = action.payload
+        },
+        loadMark: (state, action) => {
+            state.currentMark = action.payload
+        },
         changeCurrentMember: (state, action) => {
             state.currentMember = action.payload
         },
     },
 })
 
-export const { loadColumns, loadData, changeCurrentMember } =
-    appDataSlice.actions
+export const {
+    loadColumns,
+    loadData,
+    changeCurrentMember,
+    loadMark,
+    changeData,
+} = appDataSlice.actions
 
 export default appDataSlice.reducer

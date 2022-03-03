@@ -1,119 +1,86 @@
-import { useState } from 'react'
-import { Menu, Layout, Table, Modal, Button } from 'antd'
+import { useState, useEffect } from 'react'
+import { Menu, Layout, Table, Modal, Button, Typography } from 'antd'
 import { IdcardOutlined, FileTextFilled, PlusOutlined } from '@ant-design/icons'
 import { useDispatch, useSelector } from 'react-redux'
-import { changeCurrentMember, loadColumns, loadData } from './appDataSlice'
+import {
+    changeCurrentMember,
+    loadData,
+    loadMark,
+    changeData,
+} from './appDataSlice'
 // import axios from 'axios'
 
 import { useGetColumnsQuery, useGetDataQuery } from './apiSlice'
 
 const { Sider, Content } = Layout
 
-// Test data code
-// if (
-//     typeof objData === 'string' ||
-//     objData instanceof String
-// ) {
-//     console.log(objData)
-// } else {
-//     console.log(objData)
-// }
-// if (
-//     typeof objData === 'string' ||
-//     objData instanceof String
-// ) {
-//     return objData
-// } else {
-//     if (objData.marks) {
-//         objData.marks.map((res) => (
-//             <div key={res.key}>{res.mark}</div>
-//         ))
-//     } else {
-//         return objData.mark
-//     }
-// }
+const { Text } = Typography
+
+function MemberMarks(props) {
+    const { data, name, myKey } = props
+
+    const currentMark = useSelector((state) => state.appData.currentMark)
+
+    const dispatch = useDispatch()
+
+    const getMarks = () => {
+        var marks
+        data.forEach((res) => {
+            if (res.fio === name) {
+                Object.entries(res).forEach((val) => {
+                    if (typeof val[1] == 'object') {
+                        if (val[1].key === myKey) {
+                            if (val[1].marks) {
+                                marks = val[1].marks
+                            } else {
+                                marks = val[1].mark
+                            }
+                        }
+                    }
+                })
+            }
+        })
+        return marks
+    }
+
+    return (
+        <div>
+            {getMarks() ? (
+                <div>
+                    {getMarks().length === 0 ? (
+                        <span>Нет оценок</span>
+                    ) : (
+                        <div>
+                            {getMarks().map((res) => (
+                                <Button
+                                    type="default"
+                                    key={res.key}
+                                    onClick={() => dispatch(loadMark(res))}
+                                >
+                                    {res.mark}
+                                </Button>
+                            ))}
+                            {currentMark.isEdit ? <span>edit</span> : null}
+                            {currentMark.isDelete ? <span>delete</span> : null}
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <span>Нет оценок</span>
+            )}
+        </div>
+    )
+}
+
+function MyTable(props) {
+    const { data, columns } = props
+
+    return <Table columns={columns} dataSource={data} />
+}
 
 function App() {
     const [collapsed, changeCollapsed] = useState(false)
     const [isShowModal, setIsShowModal] = useState(false)
-    // const [currentMember, setCurrentMember] = useState({})
-
-    // const resColumns = []
-
-    // useEffect(() => {
-    //     const columns = axios.get('https://beta.citorleu.kz/v1/common/columns')
-    //     const data = axios.get('https://beta.citorleu.kz/v1/common/data')
-    //     axios.all([columns, data]).then(
-    //         axios.spread((...responses) => {
-    //             responses[0].data.forEach((data) =>
-    //                 resColumns.push({
-    //                     title: data.title,
-    //                     dataIndex: data.key,
-    //                     key: data.key,
-    //                     render: (objData) => {
-    //                         if (
-    //                             typeof objData === 'string' ||
-    //                             objData instanceof String
-    //                         ) {
-    //                             return objData
-    //                         } else {
-    //                             if (objData.marks) {
-    //                                 if (objData.marks.length === 0) {
-    //                                     return (
-    //                                         <Button
-    //                                             type="text"
-    //                                             onClick={() => showModal()}
-    //                                         >
-    //                                             <PlusOutlined
-    //                                                 style={{
-    //                                                     color: 'rgba(24, 144, 255, 1)',
-    //                                                 }}
-    //                                             />
-    //                                         </Button>
-    //                                     )
-    //                                 } else {
-    //                                     return objData.marks.map((res) => (
-    //                                         <div key={res.key}>{res.mark}</div>
-    //                                     ))
-    //                                 }
-    //                             } else {
-    //                                 // Code in case when 'marks' property not exist, but 'mark' does
-    //                                 if (objData.mark) {
-    //                                     return objData.mark
-    //                                 } else {
-    //                                     return (
-    //                                         <Button
-    //                                             type="text"
-    //                                             onClick={() => showModal()}
-    //                                         >
-    //                                             <PlusOutlined
-    //                                                 style={{
-    //                                                     color: 'rgba(24, 144, 255, 1)',
-    //                                                 }}
-    //                                             />
-    //                                         </Button>
-    //                                     )
-    //                                 }
-    //                             }
-    //                         }
-    //                     },
-    //                 })
-    //             )
-    //             resColumns[0].dataIndex = 'fio'
-
-    //             // const jsonColumns = JSON.stringify(resColumns)
-    //             // const jsonData = JSON.stringify(responses[1].data)
-
-    //             // dispatch(loadData(jsonData))
-    //             // dispatch(loadColumns(jsonColumns))
-
-    //             // setColumns(resColumns)
-    //             // setData(responses[1].data)
-    //             dispatch(loadColumns(resColumns))
-    //             dispatch(loadData(responses[1].data))
-    //         })
-    //     )
-    // }, [])
 
     const showModal = () => {
         setIsShowModal(true)
@@ -127,49 +94,11 @@ function App() {
         setIsShowModal(false)
     }
 
-    // const columns = [
-    //     {
-    //         title: 'Fio',
-    //         dataIndex: 'fio',
-    //         key: 'fio',
-    //     },
-    //     {
-    //         title: '31-08',
-    //         dataIndex: 998,
-    //         key: 998,
-    //     },
-    //     {
-    //         title: '30-08',
-    //         dataIndex: 997,
-    //         key: 997,
-    //     },
-    // ]
-
-    // const data = [
-    //     {
-    //         key: '1',
-    //         fio: 'John Brown',
-    //         998: 'check',
-    //         997: 'this',
-    //     },
-    //     {
-    //         key: '2',
-    //         fio: 'Hawandonnell',
-    //         998: 'check',
-    //         997: 'this',
-    //     },
-    //     {
-    //         key: '3',
-    //         fio: 'Jack Jonhson',
-    //         998: 'check',
-    //         997: 'this',
-    //     },
-    // ]
-
     const { data: columns, isLoading: isColumnsLoading } = useGetColumnsQuery()
     const { data: memberData, isLoading: isDataLoading } = useGetDataQuery()
 
     const currentMember = useSelector((state) => state.appData.currentMember)
+    const data = useSelector((state) => state.appData.data)
 
     const dispatch = useDispatch()
 
@@ -180,6 +109,7 @@ function App() {
             var member = {
                 date,
                 name: '',
+                key,
             }
             memberData.forEach((res) => {
                 Object.entries(res).forEach((val) => {
@@ -230,9 +160,24 @@ function App() {
                                     </Button>
                                 )
                             } else {
-                                return objData.marks.map((res) => (
-                                    <div key={res.key}>{res.mark}</div>
-                                ))
+                                return (
+                                    <Button
+                                        type="default"
+                                        onClick={() => {
+                                            dispatch(
+                                                changeCurrentMember(
+                                                    getMember(
+                                                        data.title,
+                                                        objData.key
+                                                    )
+                                                )
+                                            )
+                                            showModal()
+                                        }}
+                                    >
+                                        {objData.marks[0].mark}
+                                    </Button>
+                                )
                             }
                         } else {
                             // Code in case when 'marks' property not exist, but 'mark' does
@@ -270,15 +215,7 @@ function App() {
 
         newColumns[0].dataIndex = newColumns[0].title
 
-        dispatch((dispatch, getState) => {
-            const jsonData = JSON.stringify(memberData)
-            const jsonColumns = JSON.stringify(newColumns)
-            dispatch(loadColumns(jsonColumns))
-            dispatch(loadData(jsonData))
-            // const state = getState()
-            // console.log(JSON.parse(state.appData.data))
-            // console.log(JSON.parse(state.appData.columns))
-        })
+        dispatch(loadData(JSON.stringify(memberData)))
 
         return (
             <div className="App">
@@ -303,14 +240,61 @@ function App() {
                         </Menu>
                     </Sider>
                     <Content style={{ padding: 24 }}>
-                        <Table columns={newColumns} dataSource={memberData} />
+                        {data ? (
+                            <MyTable
+                                data={JSON.parse(data)}
+                                columns={newColumns}
+                            />
+                        ) : null}
+                        <Button
+                            type="primary"
+                            onClick={() => {
+                                const plainData = JSON.parse(data)
+                                dispatch(loadData(JSON.stringify(plainData[0])))
+                                console.log(data)
+                            }}
+                        >
+                            change data
+                        </Button>
                         <Modal
                             visible={isShowModal}
                             title={currentMember.name}
                             onOk={() => handleOk()}
                             onCancel={() => handleClose()}
+                            footer={[
+                                <Button
+                                    key="back"
+                                    type="default"
+                                    onClick={() => {
+                                        dispatch(loadMark({}))
+                                        handleClose()
+                                    }}
+                                >
+                                    Отмена
+                                </Button>,
+                                <Button
+                                    key="submit"
+                                    type="primary"
+                                    onClick={() => {
+                                        dispatch(loadMark({}))
+                                        handleClose()
+                                    }}
+                                >
+                                    Сохранить
+                                </Button>,
+                            ]}
                         >
-                            <h3>{currentMember.date}</h3>
+                            <Text type="secondary">Дата: </Text>
+                            <span>{currentMember.date}</span>
+                            <br />
+                            <Text type="secondary">Оценки: </Text>
+                            {data ? (
+                                <MemberMarks
+                                    data={JSON.parse(data)}
+                                    name={currentMember.name}
+                                    myKey={currentMember.key}
+                                />
+                            ) : null}
                         </Modal>
                     </Content>
                 </Layout>
