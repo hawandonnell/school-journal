@@ -5,7 +5,7 @@ export const appDataSlice = createSlice({
     initialState: {
         columns: '',
         data: '',
-        newData: '',
+        oldData: '',
         currentMember: {},
         currentMark: {},
     },
@@ -16,11 +16,66 @@ export const appDataSlice = createSlice({
         loadData: (state, action) => {
             state.data = action.payload
         },
-        loadNewData: (state, action) => {
-            state.newData = action.payload
-        },
         changeData: (state, action) => {
-            state.data = action.payload
+            const plainData = JSON.parse(state.data)
+            plainData.forEach((res) => {
+                if (res.fio === action.payload.name) {
+                    Object.entries(res).forEach((val) => {
+                        if (typeof val[1] == 'object') {
+                            if (val[1].marks) {
+                                val[1].marks.forEach((mark) => {
+                                    if (mark.key === action.payload.mark.key) {
+                                        mark.mark = action.payload.mark.mark
+                                    }
+                                })
+                            } else {
+                                if (val[1].mark) {
+                                    val[1].mark.forEach((mark) => {
+                                        if (
+                                            mark.key === action.payload.mark.key
+                                        ) {
+                                            mark.mark = action.payload.mark.mark
+                                        }
+                                    })
+                                }
+                            }
+                        }
+                    })
+                }
+            })
+            state.data = JSON.stringify(plainData)
+        },
+        addData: (state, action) => {
+            const plainData = JSON.parse(state.data)
+            plainData.forEach((res) => {
+                if (res.fio === action.payload.name) {
+                    Object.entries(res).forEach((val) => {
+                        if (typeof val[1] == 'object') {
+                            if (val[1].key === action.payload.key) {
+                                if (val[1].marks) {
+                                    val[1].marks.push({
+                                        key: Math.random(),
+                                        mark: action.payload.mark,
+                                        isEdit: true,
+                                        isDelete: true,
+                                    })
+                                } else {
+                                    if (!val[1].mark) {
+                                        val[1].mark = []
+                                    }
+                                    val[1].mark.push({
+                                        key: Math.random(),
+                                        mark: action.payload.mark,
+                                        isEdit: true,
+                                        isDelete: true,
+                                    })
+                                }
+                            }
+                        }
+                    })
+                }
+            })
+            state.data = JSON.stringify(plainData)
         },
         loadMark: (state, action) => {
             state.currentMark = action.payload
@@ -34,10 +89,10 @@ export const appDataSlice = createSlice({
 export const {
     loadColumns,
     loadData,
-    loadNewData,
     changeCurrentMember,
-    loadMark,
     changeData,
+    loadMark,
+    addData,
 } = appDataSlice.actions
 
 export default appDataSlice.reducer
