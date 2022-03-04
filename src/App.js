@@ -6,6 +6,7 @@ import {
     changeCurrentMember,
     loadData,
     loadMark,
+    loadNewData,
     changeData,
 } from './appDataSlice'
 // import axios from 'axios'
@@ -20,6 +21,7 @@ function MemberMarks(props) {
     const { data, name, myKey } = props
 
     const currentMark = useSelector((state) => state.appData.currentMark)
+    const currentMember = useSelector((state) => state.appData.currentMember)
 
     const dispatch = useDispatch()
 
@@ -50,7 +52,7 @@ function MemberMarks(props) {
                     {getMarks().length === 0 ? (
                         <span>Нет оценок</span>
                     ) : (
-                        <div>
+                        <>
                             {getMarks().map((res) => (
                                 <Button
                                     type="default"
@@ -61,8 +63,52 @@ function MemberMarks(props) {
                                 </Button>
                             ))}
                             {currentMark.isEdit ? <span>edit</span> : null}
-                            {currentMark.isDelete ? <span>delete</span> : null}
-                        </div>
+                            {currentMark.isDelete ? (
+                                <Button
+                                    type="text"
+                                    danger
+                                    onClick={() => {
+                                        var newData = data
+                                        newData.forEach((res) => {
+                                            if (
+                                                res.fio === currentMember.name
+                                            ) {
+                                                Object.entries(res).forEach(
+                                                    (val) => {
+                                                        if (
+                                                            typeof val[1] ==
+                                                            'object'
+                                                        ) {
+                                                            val[1].marks.forEach(
+                                                                (mark) => {
+                                                                    if (
+                                                                        mark.key ===
+                                                                        currentMark.key
+                                                                    ) {
+                                                                        val[1].marks.splice(
+                                                                            val[1].marks.indexOf(
+                                                                                mark
+                                                                            ),
+                                                                            1
+                                                                        )
+                                                                    }
+                                                                }
+                                                            )
+                                                        }
+                                                    }
+                                                )
+                                            }
+                                        })
+                                        dispatch(
+                                            loadNewData(JSON.stringify(newData))
+                                        )
+                                        console.log(currentMark)
+                                    }}
+                                >
+                                    Удалить
+                                </Button>
+                            ) : null}
+                        </>
                     )}
                 </div>
             ) : (
@@ -81,6 +127,7 @@ function MyTable(props) {
 function App() {
     const [collapsed, changeCollapsed] = useState(false)
     const [isShowModal, setIsShowModal] = useState(false)
+    const [isFetched, setIsFetched] = useState(false)
 
     const showModal = () => {
         setIsShowModal(true)
@@ -99,6 +146,7 @@ function App() {
 
     const currentMember = useSelector((state) => state.appData.currentMember)
     const data = useSelector((state) => state.appData.data)
+    const newData = useSelector((state) => state.appData.newData)
 
     const dispatch = useDispatch()
 
@@ -215,7 +263,10 @@ function App() {
 
         newColumns[0].dataIndex = newColumns[0].title
 
-        dispatch(loadData(JSON.stringify(memberData)))
+        if (!isFetched) {
+            dispatch(loadData(JSON.stringify(memberData)))
+            setIsFetched(true)
+        }
 
         return (
             <div className="App">
@@ -242,20 +293,10 @@ function App() {
                     <Content style={{ padding: 24 }}>
                         {data ? (
                             <MyTable
-                                data={JSON.parse(data)}
+                                data={data ? JSON.parse(data) : null}
                                 columns={newColumns}
                             />
                         ) : null}
-                        <Button
-                            type="primary"
-                            onClick={() => {
-                                const plainData = JSON.parse(data)
-                                dispatch(loadData(JSON.stringify(plainData[0])))
-                                console.log(data)
-                            }}
-                        >
-                            change data
-                        </Button>
                         <Modal
                             visible={isShowModal}
                             title={currentMember.name}
@@ -267,6 +308,7 @@ function App() {
                                     type="default"
                                     onClick={() => {
                                         dispatch(loadMark({}))
+                                        dispatch(loadNewData(''))
                                         handleClose()
                                     }}
                                 >
@@ -275,8 +317,10 @@ function App() {
                                 <Button
                                     key="submit"
                                     type="primary"
+                                    disabled={!newData ? true : false}
                                     onClick={() => {
                                         dispatch(loadMark({}))
+                                        dispatch(loadData(newData))
                                         handleClose()
                                     }}
                                 >

@@ -5,6 +5,7 @@ export const appDataSlice = createSlice({
     initialState: {
         columns: '',
         data: '',
+        newData: '',
         currentMember: {},
         currentMark: {},
     },
@@ -14,6 +15,9 @@ export const appDataSlice = createSlice({
         },
         loadData: (state, action) => {
             state.data = action.payload
+        },
+        loadNewData: (state, action) => {
+            state.newData = action.payload
         },
         changeData: (state, action) => {
             state.data = action.payload
@@ -30,6 +34,7 @@ export const appDataSlice = createSlice({
 export const {
     loadColumns,
     loadData,
+    loadNewData,
     changeCurrentMember,
     loadMark,
     changeData,
