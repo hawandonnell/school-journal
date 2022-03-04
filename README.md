@@ -2,6 +2,8 @@
 
 App for grading students
 
+App: https://hungry-behavior.surge.sh/
+
 🔥 Technoligies:
 
 <ul>
