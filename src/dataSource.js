@@ -3,27 +3,8 @@ const dataSource = [
         key: 1,
         fio: 'Иван Иванов',
         123: {
-            marks: [
-                {
-                    key: 1,
-                    mark: 4,
-                    isEdit: true,
-                    isDelete: true,
-                },
-                {
-                    key: 2,
-                    mark: 3,
-                    isEdit: false,
-                    isDelete: false,
-                },
-                {
-                    key: 3,
-                    mark: 5,
-                    isEdit: false,
-                    isDelete: false,
-                },
-            ],
-            isAdd: false,
+            marks: [],
+            isAdd: true,
         },
         124: {
             marks: [

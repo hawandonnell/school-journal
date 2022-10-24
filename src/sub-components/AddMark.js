@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux'
 import getMember from '../getMember'
 import { changeCurrentMember } from '../appDataSlice'
 
-export default function AddMark({ isAdd }) {
+export default function AddMark({ isAdd, name, date }) {
     const [addMarkModalVisible, setAddMarkModalVisible] = useState(false)
 
     return (
@@ -20,12 +20,9 @@ export default function AddMark({ isAdd }) {
                 {isAdd ? (
                     <Button
                         type="text"
-                        onClick={() => {
-                            // dispatch(
-                            //     changeCurrentMember(
-                            //         getMember()
-                            //     )
-                            // )
+                        id="1"
+                        onClick={(e) => {
+                            console.log(e.target.id)
                             setAddMarkModalVisible(true)
                         }}
                     >
@@ -47,6 +44,8 @@ export default function AddMark({ isAdd }) {
                 <AddMarkModal
                     isVisible={addMarkModalVisible}
                     setIsVisible={setAddMarkModalVisible}
+                    name={name}
+                    date={date}
                 />
             </div>
         </div>

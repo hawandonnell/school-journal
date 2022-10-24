@@ -16,6 +16,8 @@ export default function MarksList({ marks, isAdd }) {
 
     const dispatch = useDispatch()
 
+    const { name, date } = getMember(data, columns, marks[0].key)
+
     return (
         <Space>
             {marks.map((res) => (
@@ -52,7 +54,7 @@ export default function MarksList({ marks, isAdd }) {
                 isVisible={markModalVisible}
                 setIsVisible={setMarkModalVisible}
             />
-            <AddMark isAdd={isAdd} />
+            <AddMark isAdd={isAdd} name={name} date={date} />
         </Space>
     )
 }

@@ -1,3 +1,5 @@
+// Function that return object that contain - name of mark owner; mark date; mark additional info like isEdit, isDelete
+// dataSource, columns and marl unique key are required as arguments
 export default function getMember(data, columns, key) {
     const resMember = {
         name: '',

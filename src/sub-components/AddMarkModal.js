@@ -1,13 +1,13 @@
 import { Modal, Button, Space, Typography, Input } from 'antd'
-import { useSelector } from 'react-redux'
+// import { useSelector } from 'react-redux'
 const { Text } = Typography
 
-export default function AddMarkModal({ isVisible, setIsVisible }) {
-    const currentMember = useSelector((state) => state.appData.currentMember)
+export default function AddMarkModal({ isVisible, setIsVisible, name, date }) {
+    // const currentMember = useSelector((state) => state.appData.currentMember)
     return (
         <Modal
             visible={isVisible}
-            title={currentMember.name}
+            title={name}
             onOk={() => setIsVisible(false)}
             onCancel={() => setIsVisible(false)}
             footer={[
@@ -26,7 +26,7 @@ export default function AddMarkModal({ isVisible, setIsVisible }) {
             <Space direction="vertical">
                 <Space>
                     <Text type="secondary">Дата: </Text>
-                    <span>{currentMember.date}</span>
+                    <span>{date}</span>
                 </Space>
                 <Space>
                     <Text type="secondary">Оценка: </Text>
